@@ -100,7 +100,7 @@ def call() {
         failure {
             script {
                 def level = 'danger'
-                def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME":"
+                def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
                 helper.notifySlack level, env, subject
             }
         }
