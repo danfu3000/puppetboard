@@ -18,87 +18,22 @@ def call() {
             GIT_SSH_COMMAND = "ssh -i ${PROJECT_KEY}"
             GIT_SSH_CONFIG = "ssh -i ${CONFIG_KEY}"
         }
-
-        stages {
-            stage('Pull') {
-                steps {
-                    script {
-                        def cmd="""export BUILDDIR=${PROJECT_DIR};
-                                if [ ! -d \${BUILDDIR} ];then 
-                                    mkdir -p \${BUILDDIR}; 
-                                    cd \${BUILDDIR}; 
-                                    git init; git remote add origin ssh://git@github.com/megaease/${PROJECT_NAME}.git;
-                                fi; 
-                                cd \${BUILDDIR}; 
-                                GIT_SSH_COMMAND="${GIT_SSH_COMMAND}" git pull;git checkout ${GIT_BRANCH}"""
-                        sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
-                    }
+        stages{
+            stage('test'){
+                script{
+                    sh "echo ${PROJECT_DIR}"
+                    sh "echo ${PROJECT_KEY}"
+                    sh "echo ${PROJECT_NAME}"
+                    sh "echo ${CONFIG_NAME}"
+                    sh "echo ${GIT_BRANCH}"
+                    sh "echo ${CONFIG_DIR}"
+                    sh "echo ${CONFIG_KEY}"
+                    sh "echo ${CONFIG_BRANCH}"
+                    sh "echo ${BUILDTEST_CMD}"
+                    sh "echo ${BUILD_CMD}"
+                    sh "echo ${DEPLOY_CMD}"
+                    sh "echo ${GIT_SSH_COMMAND}"
                 }
-            }
-            stage('PullConfig') {
-                when {
-                    not {environment name:'CONFIG_NAME', value:''}
-                }
-                steps {
-                    script {
-                        def cmd="""export CONFIGDIR=${CONFIG_DIR};export BUILDDIR=${PROJECT_DIR};
-                                if [ ! -d \${CONFIGDIR} ];then 
-                                    mkdir -p \${CONFIGDIR}; 
-                                    cd \${CONFIGDIR}; 
-                                    git init; git remote add origin ssh://git@github.com/megaease/${CONFIG_NAME}.git;
-                                fi; 
-                                cd \${CONFIGDIR}; 
-                                GIT_SSH_COMMAND="${GIT_SSH_CONFIG}" git pull;
-                                git checkout ${CONFIG_BRANCH};
-                                cp \${CONFIGDIR}/*.env \${BUILDDIR}/scripts/;
-                                """
-                        sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
-                    }
-                }
-            }
-            stage('Buildtest') {
-                when {
-                    not {environment name:'BUILDTEST_CMD', value:''}
-                }
-                steps {
-                    script {
-                        def cmd="""${BUILDTEST_CMD}"""
-                        sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
-                    }
-                }
-            }
-            stage('Build') {
-                steps {
-                    script {
-                        def cmd="""${BUILD_CMD}"""
-                        sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
-                    }
-                }
-            }
-             stage('Deploy') {
-                steps {
-                    script {
-                        def cmd="""${DEPLOY_CMD}"""
-                        sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
-                    }
-                }
-            }
-        }
-    }
-    post {
-        success {
-            script {
-                def level = 'good'
-                def subject = "[TASK:${JOB_NAME} SUCCESS]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
-                helper.notifySlack level, env, subject
-            }
-        }
-
-        failure {
-            script {
-                def level = 'danger'
-                def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
-                helper.notifySlack level, env, subject
             }
         }
     }
