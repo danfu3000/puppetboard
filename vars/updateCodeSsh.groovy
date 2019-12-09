@@ -34,7 +34,7 @@ def call() {
                                 if [ ! -d \${CONFIGDIR} ];then 
                                     mkdir -p \${CONFIGDIR}; 
                                     cd \${CONFIGDIR}; 
-                                    git init; git remote add origin ssh://git@github.com/danfu3000/${CONFIG_NAME}.git;
+                                    git init; git remote add origin ssh://git@github.com/megaease/${CONFIG_NAME}.git;
                                 fi; 
                                 cd \${CONFIGDIR}; 
                                 GIT_SSH_COMMAND="${GIT_SSH_CONFIG}" git pull;
@@ -85,6 +85,23 @@ def call() {
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
+            }
+        }
+    }
+    post {
+        success {
+            script {
+                def level = 'good'
+                def subject = "[TASK:${JOB_NAME} SUCCESS]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
+                helper.notifySlack level, env, subject
+            }
+        }
+
+        failure {
+            script {
+                def level = 'danger'
+                def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME":"
+                helper.notifySlack level, env, subject
             }
         }
     }
