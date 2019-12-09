@@ -2,7 +2,7 @@ def call() {
     pipeline {
         agent any
         parameters {
-            string(name: 'PROJECT_NAME', defaultValue: "${JOB_NAME}", description: 'project repository name')
+            string(name: 'PROJECT_NAME', defaultValue: "project", description: 'project repository name')
             string(name: 'PROJECT_DIR', defaultValue: "\${HOME}/backdemo/project", description: 'project pull directory')
             string(name: 'PROJECT_KEY', defaultValue: "\${HOME}/.ssh/project-key.rsa", description: 'project repository sshkey')
             string(name: 'GIT_BRANCH', defaultValue: "master", description: 'project repository branch')
@@ -22,18 +22,18 @@ def call() {
             stage('test'){
                 steps{
                 script{
-                    sh "echo ${PROJECT_DIR}"
-                    sh "echo ${PROJECT_KEY}"
-                    sh "echo ${PROJECT_NAME}"
-                    sh "echo ${CONFIG_NAME}"
-                    sh "echo ${GIT_BRANCH}"
-                    sh "echo ${CONFIG_DIR}"
-                    sh "echo ${CONFIG_KEY}"
-                    sh "echo ${CONFIG_BRANCH}"
-                    sh "echo ${BUILDTEST_CMD}"
-                    sh "echo ${BUILD_CMD}"
-                    sh "echo ${DEPLOY_CMD}"
-                    sh "echo ${GIT_SSH_COMMAND}"
+                    sh "echo ${params.PROJECT_DIR}"
+                    sh "echo ${params.PROJECT_KEY}"
+                    sh "echo ${params.PROJECT_NAME}"
+                    sh "echo ${params.CONFIG_NAME}"
+                    sh "echo ${params.GIT_BRANCH}"
+                    sh "echo ${params.CONFIG_DIR}"
+                    sh "echo ${params.CONFIG_KEY}"
+                    sh "echo ${params.CONFIG_BRANCH}"
+                    sh "echo ${params.BUILDTEST_CMD}"
+                    sh "echo ${params.BUILD_CMD}"
+                    sh "echo ${params.DEPLOY_CMD}"
+                    sh "echo ${params.GIT_SSH_COMMAND}"
                 }
                 }
             }
