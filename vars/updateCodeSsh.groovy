@@ -3,16 +3,16 @@ def call() {
         agent any
         parameters {
             string(name: 'PROJECT_NAME', defaultValue: "${JOB_NAME}", description: 'project repository name')
-            string(name: 'PROJECT_DIR', defaultValue: "\${HOME}/backdemo/${PROJECT_NAME}", description: 'project pull directory')
-            string(name: 'PROJECT_KEY', defaultValue: "\${HOME}/.ssh/${PROJECT_NAME}-key.rsa", description: 'project repository sshkey')
+            string(name: 'PROJECT_DIR', defaultValue: "\${HOME}/backdemo/project", description: 'project pull directory')
+            string(name: 'PROJECT_KEY', defaultValue: "\${HOME}/.ssh/project-key.rsa", description: 'project repository sshkey')
             string(name: 'GIT_BRANCH', defaultValue: "master", description: 'project repository branch')
             string(name: 'CONFIG_NAME', defaultValue: "", description: 'config repository name, remain blank for skip get config')
-            string(name: 'CONFIG_DIR', defaultValue: "\${HOME}/backdemo/${CONFIG_NAME}", description: 'config pull directory. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'CONFIG_KEY', defaultValue: "\${HOME}/.ssh/${CONFIG_NAME}-key.rsa", description: 'config repository sshkey. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_DIR', defaultValue: "\${HOME}/backdemo/config", description: 'config pull directory. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_KEY', defaultValue: "\${HOME}/.ssh/config-key.rsa", description: 'config repository sshkey. if CONFIG_NAME is blank , this is ignore ')
             string(name: 'CONFIG_BRANCH', defaultValue: "master", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'BUILDTEST_CMD', defaultValue: "source \${HOME}/.profile;cd ${PROJECT_DIR};make test", description: 'cmd for build test ')
-            string(name: 'BUILD_CMD', defaultValue: "source \${HOME}/.profile;cd ${PROJECT_DIR};make", description: 'cmd for build')
-            string(name: 'DEPLOY_CMD', defaultValue: "${PROJECT_DIR}/deploy.sh", description: 'cmd for build')
+            string(name: 'BUILDTEST_CMD', defaultValue: "source \${HOME}/.profile;cd \${HOME}/backdemo/project;make test", description: 'cmd for build test ')
+            string(name: 'BUILD_CMD', defaultValue: "source \${HOME}/.profile;cd \${HOME}/backdemo/project;make", description: 'cmd for build')
+            string(name: 'DEPLOY_CMD', defaultValue: "\${HOME}/backdemo/project/deploy.sh", description: 'cmd for build')
         }
         environment {
             GIT_SSH_COMMAND = "ssh -i ${PROJECT_KEY}"
