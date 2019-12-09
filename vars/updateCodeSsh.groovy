@@ -20,6 +20,7 @@ def call() {
         }
         stages{
             stage('test'){
+                steps{
                 script{
                     sh "echo ${PROJECT_DIR}"
                     sh "echo ${PROJECT_KEY}"
@@ -33,6 +34,7 @@ def call() {
                     sh "echo ${BUILD_CMD}"
                     sh "echo ${DEPLOY_CMD}"
                     sh "echo ${GIT_SSH_COMMAND}"
+                }
                 }
             }
         }
