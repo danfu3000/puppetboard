@@ -1,11 +1,22 @@
 def call() {
     pipeline {
         agent any
+        parameters {
+            string(name: 'PROJECT_NAME', defaultValue: "${JOB_NAME}", description: 'project repository name')
+            string(name: 'PROJECT_DIR', defaultValue: "\${HOME}/backdemo/${PROJECT_NAME}", description: 'project pull directory')
+            string(name: 'PROJECT_KEY', defaultValue: "\${HOME}/.ssh/${PROJECT_NAME}-key.rsa", description: 'project repository sshkey')
+            string(name: 'GIT_BRANCH', defaultValue: "master", description: 'project repository branch')
+            string(name: 'CONFIG_NAME', defaultValue: "", description: 'config repository name, remain blank for skip get config')
+            string(name: 'CONFIG_DIR', defaultValue: "\${HOME}/backdemo/${CONFIG_NAME}", description: 'config pull directory. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_KEY', defaultValue: "\${HOME}/.ssh/${CONFIG_NAME}-key.rsa", description: 'config repository sshkey. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_BRANCH', defaultValue: "master", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'BUILDTEST_CMD', defaultValue: "source \${HOME}/.profile;cd ${PROJECT_DIR};make test", description: 'cmd for build test ')
+            string(name: 'BUILD_CMD', defaultValue: "source \${HOME}/.profile;cd ${PROJECT_DIR};make", description: 'cmd for build')
+            string(name: 'DEPLOY_CMD', defaultValue: "${PROJECT_DIR}/deploy.sh", description: 'cmd for build')
+        }
         environment {
-            PROJECT_DIR = "\${HOME}/backdemo/${PROJECT_NAME}"
-            CONFIG_DIR = "\${HOME}/backdemo/${CONFIG_NAME}"
-            GIT_SSH_COMMAND = "ssh -i \${HOME}/.ssh/${PROJECT_NAME}-key.rsa"
-            GIT_SSH_CONFIG = "ssh -i \${HOME}/.ssh/${CONFIG_NAME}-key.rsa"
+            GIT_SSH_COMMAND = "ssh -i ${PROJECT_KEY}"
+            GIT_SSH_CONFIG = "ssh -i ${CONFIG_KEY}"
         }
 
         stages {
@@ -51,10 +62,7 @@ def call() {
                 }
                 steps {
                     script {
-                        def cmd="""export BUILDDIR=${PROJECT_DIR};
-                                cd \${BUILDDIR}; 
-                                source \${HOME}/.profile;
-                                ${BUILDTEST_CMD};"""
+                        def cmd="""${BUILDTEST_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
@@ -62,16 +70,7 @@ def call() {
             stage('Build') {
                 steps {
                     script {
-                        def cmd="""export BUILDDIR=${PROJECT_DIR};
-                                cd \${BUILDDIR}; 
-                                source \${HOME}/.profile;
-                                ${BUILD_CMD};
-                                export PRODLABDIR=\${HOME}/backdemo/prodlab/bin;
-                                if [ ! -d \${PRODLABDIR} ];then 
-                                    mkdir -p \${PRODLABDIR};
-                                fi;
-                                cp \${BUILDDIR}/bin/easegateway-server \${PRODLABDIR}/easegateway-server.${BUILD_ID};
-                                cp \${BUILDDIR}/bin/egctl \${PRODLABDIR}/egctl.${BUILD_ID}"""
+                        def cmd="""${BUILD_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
@@ -79,9 +78,7 @@ def call() {
              stage('Deploy') {
                 steps {
                     script {
-                        def cmd="""export BUILDDIR=${PROJECT_DIR};
-                                export BUILD_ID=${BUILD_ID}
-                                \${BUILDDIR}/scripts/${DEPLOY_CMD};"""
+                        def cmd="""${DEPLOY_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
