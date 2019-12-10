@@ -2,6 +2,8 @@ def call() {
     pipeline {
         agent any
         parameters {
+            string(name: 'SSH_NAME', defaultValue: "km05", description: 'sshPublisher hostname')
+
             string(name: 'PROJECT_BASEDIR', defaultValue: "/home/ubuntu/backdemo", description: 'project pull directory')
             string(name: 'PROJECT_KEYDIR', defaultValue: "/home/ubuntu/.ssh", description: 'project pull directory')
             string(name: 'PROJECT_NAME', defaultValue: "project", description: 'project repository name')
@@ -27,7 +29,7 @@ def call() {
             stage('Pull') {
                 steps {
                     script {
-                        def cmd="""export BUILDDIR=${PROJECT_BASEDIR}/${PROJECT_DIR};
+                        def cmd="""export BUILDDIR=${PROJECT_BASEDIR}/${PROJECT_NAME};
                                 if [ ! -d \${BUILDDIR} ];then 
                                     mkdir -p \${BUILDDIR}; 
                                     cd \${BUILDDIR}; 
@@ -45,7 +47,7 @@ def call() {
                 }
                 steps {
                     script {
-                        def cmd="""export CONFIGDIR=${PROJECT_BASEDIR}/${CONFIG_DIR};export BUILDDIR=${PROJECT_BASEDIR}/${PROJECT_DIR};
+                        def cmd="""export CONFIGDIR=${PROJECT_BASEDIR}/${CONFIG_NAME};export BUILDDIR=${PROJECT_BASEDIR}/${PROJECT_NAME};
                                 if [ ! -d \${CONFIGDIR} ];then 
                                     mkdir -p \${CONFIGDIR}; 
                                     cd \${CONFIGDIR}; 
@@ -66,7 +68,7 @@ def call() {
                 }
                 steps {
                     script {
-                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_DIR};${BUILDTEST_CMD}"""
+                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_NAME};${BUILDTEST_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
@@ -74,7 +76,7 @@ def call() {
             stage('Build') {
                 steps {
                     script {
-                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_DIR};${BUILD_CMD}"""
+                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_NAME};${BUILD_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
@@ -82,7 +84,7 @@ def call() {
              stage('Deploy') {
                 steps {
                     script {
-                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_DIR}/${SCRIPT_DIR};${DEPLOY_CMD}"""
+                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_NAME}/${SCRIPT_DIR};${DEPLOY_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
