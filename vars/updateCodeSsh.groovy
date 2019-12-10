@@ -89,20 +89,21 @@ def call() {
             }
         }
 
-    post {
-        success {
-            script {
-                def level = 'good'
-                def subject = "[TASK:${JOB_NAME} SUCCESS]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
-                helper.notifySlack level, env, subject
+        post {
+            success {
+                script {
+                    def level = 'good'
+                    def subject = "[TASK:${JOB_NAME} SUCCESS]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
+                    helper.notifySlack level, env, subject
+                }
             }
-        }
 
-        failure {
-            script {
-                def level = 'danger'
-                def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
-                helper.notifySlack level, env, subject
+            failure {
+                script {
+                    def level = 'danger'
+                    def subject = "[TASK:${JOB_NAME} FAILED]Deploy megaease/${JOB_NAME} in environment:${SSH_NAME}"
+                    helper.notifySlack level, env, subject
+                }
             }
         }
     }
