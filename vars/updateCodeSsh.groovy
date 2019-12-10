@@ -2,24 +2,24 @@ def call() {
     pipeline {
         agent any
         parameters {
-            string(name: 'SSH_NAME', defaultValue: "km05", description: 'sshPublisher hostname')
+            string(name: 'SSH_NAME', defaultValue: params.SSH_NAME?:"km05", description: 'sshPublisher hostname')
 
-            string(name: 'PROJECT_BASEDIR', defaultValue: "/home/ubuntu/backdemo", description: 'project pull directory')
-            string(name: 'PROJECT_KEYDIR', defaultValue: "/home/ubuntu/.ssh", description: 'project pull directory')
-            string(name: 'PROJECT_NAME', defaultValue: "project", description: 'project repository name')
-            string(name: 'PROJECT_KEY', defaultValue: "project-key.rsa", description: 'project repository sshkey')
-            string(name: 'GIT_BRANCH', defaultValue: "master", description: 'project repository branch')
+            string(name: 'PROJECT_BASEDIR', defaultValue: params.PROJECT_BASEDIR?:"/home/ubuntu/backdemo", description: 'project pull directory')
+            string(name: 'PROJECT_KEYDIR', defaultValue: params.PROJECT_KEYDIR?:"/home/ubuntu/.ssh", description: 'project pull directory')
+            string(name: 'PROJECT_NAME', defaultValue: params.PROJECT_NAME?:"project", description: 'project repository name')
+            string(name: 'PROJECT_KEY', defaultValue: params.PROJECT_KEY?:"project-key.rsa", description: 'project repository sshkey')
+            string(name: 'GIT_BRANCH', defaultValue: params.GIT_BRANCH?:"master", description: 'project repository branch')
             
-            string(name: 'CONFIG_NAME', defaultValue: "", description: 'config repository name, remain blank for skip get config')
-            string(name: 'CONFIG_DIR', defaultValue: "config", description: 'config pull directory. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'CONFIG_KEY', defaultValue: "config-key.rsa", description: 'config repository sshkey. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'CONFIG_BRANCH', defaultValue: "master", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'ENV_FILE', defaultValue: "*.env", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_NAME', defaultValue: params.CONFIG_NAME?:"", description: 'config repository name, remain blank for skip get config')
+            string(name: 'CONFIG_DIR', defaultValue: params.CONFIG_DIR?:"config", description: 'config pull directory. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_KEY', defaultValue: params.CONFIG_KEY?:"config-key.rsa", description: 'config repository sshkey. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'CONFIG_BRANCH', defaultValue: params.CONFIG_BRANCH?:"master", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'ENV_FILE', defaultValue: params.ENV_FILE?:"*.env", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
             
-            string(name: 'SCRIPT_DIR', defaultValue: "script", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
-            string(name: 'BUILDTEST_CMD', defaultValue: "make test", description: 'cmd for build test ')
-            string(name: 'BUILD_CMD', defaultValue: "make", description: 'cmd for build')
-            string(name: 'DEPLOY_CMD', defaultValue: "deploy.sh", description: 'cmd for deploy')
+            string(name: 'SCRIPT_DIR', defaultValue: params.SCRIPT_DIR?:"script", description: 'config repository branch. if CONFIG_NAME is blank , this is ignore ')
+            string(name: 'BUILDTEST_CMD', defaultValue: params.BUILDTEST_CMD?:"make test", description: 'cmd for build test ')
+            string(name: 'BUILD_CMD', defaultValue: params.BUILD_CMD?:"make", description: 'cmd for build')
+            string(name: 'DEPLOY_CMD', defaultValue: params.DEPLOY_CMD?:"deploy.sh", description: 'cmd for deploy')
         }
         environment {
             GIT_SSH_COMMAND = "ssh -i ${PROJECT_KEYDIR}/${PROJECT_KEY}"
