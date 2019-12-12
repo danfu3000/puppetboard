@@ -222,11 +222,11 @@ def getPullRequestComment(repo, pullid){
     }
 }
 
-def setPullRequestComment(repo, pullid, commitid, path, line, text){
+def setPullRequestComment(repo, pullid, commitid, path, position, text){
     def post_data = [
             "commit_id"  : commitid,
             "path"       : path,
-            "line"       : line,
+            "position"   : position,
             "body"       : text
         ]
     echo "${post_data}"
