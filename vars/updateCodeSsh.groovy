@@ -84,7 +84,7 @@ def call() {
              stage('Deploy') {
                 steps {
                     script {
-                        def cmd="""source \${HOME}/.profile;cd ${PROJECT_BASEDIR}/${PROJECT_NAME}/${SCRIPT_DIR};${DEPLOY_CMD}"""
+                        def cmd="""source \${HOME}/.profile;export BUILD_ID=${BUILD_ID};cd ${PROJECT_BASEDIR}/${PROJECT_NAME}/${SCRIPT_DIR};${DEPLOY_CMD}"""
                         sshPublisher failOnError: true, publishers: [sshPublisherDesc(configName: "${SSH_NAME}", transfers: [sshTransfer(cleanRemote: false, excludes: '', execCommand: "${cmd}", execTimeout: 600000, flatten: false, makeEmptyDirs: false, noDefaultExcludes: false, patternSeparator: '[, ]+', remoteDirectory: '${HOME}', remoteDirectorySDF: false, removePrefix: '', sourceFiles: '')], usePromotionTimestamp: false, useWorkspaceInPromotion: false, verbose: false)]
                     }
                 }
