@@ -249,8 +249,9 @@ def setPullRequestReviews(repo, pullid, state, text){
     // Repository
     def repo_config = scm.getUserRemoteConfigs()[0]
     def repo_url = repo_config.getUrl()
-    def repository = repo_url.split(":")[1].replaceAll("\\.git", ":") + "${env.GIT_BRANCH}"
+    def repository = repo_url.split(":")[1].replaceAll("\\.git", ":")
     echo "${repository}"
+    echo "${GITHUB_PR_NUMBER}"
 
     def post_json = JsonOutput.toJson(post_data)
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
