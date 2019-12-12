@@ -237,7 +237,7 @@ def setPullRequestComment(repo, pullid, text){
 def setPullRequestReviews(repo, pullid, state, text){
     def status = "APPROVE"
 
-    if (!success) {
+    if (!state) {
         status = "PENDING"
     }
 
