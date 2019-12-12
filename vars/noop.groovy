@@ -229,8 +229,8 @@ def setPullRequestComment(repo, pullid, text){
     echo "${post_data}"
     def post_json = JsonOutput.toJson(post_data)
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
-        changesets = sh returnStdout: true, script: """curl -XPOST -H "Authorization: token ${TOKEN}" "https://api.github.com/repos/${repo}/pulls/${pullid}/comments" -d '"${post_json}"' """
-        echo "${changesets}"
+        def result = ["curl", "-X", "POST", "-H", "Authorization: token ${TOKEN}", "-d", "${post_json}", "https://api.github.com/repos/${repo}/pulls/${pullid}/comments"].execute().text
+        echo "${result}"
     }
 }
 
@@ -248,7 +248,7 @@ def setPullRequestReviews(repo, pullid, state, text){
     echo "${post_data}"
     def post_json = JsonOutput.toJson(post_data)
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
-        changesets = sh returnStdout: true, script: """curl -XPOST -H "Authorization: token ${TOKEN}" "https://api.github.com/repos/${repo}/pulls/${pullid}/reviews" -d '"${post_data}"' """
-        echo "${changesets}"
+        def result = ["curl", "-X", "POST", "-H", "Authorization: token ${TOKEN}", "-d", "${post_json}", "https://api.github.com/repos/${repo}/pulls/${pullid}/reviews"].execute().text
+        echo "${result}"
     }
 }
