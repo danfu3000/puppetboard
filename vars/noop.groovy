@@ -215,7 +215,7 @@ def sonarAnalyseForFront(env) {
     }
 }
 
-def getPullRequestComment(repo, pullid){
+def getPullRequestComment(repo, pullid, commentid){
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
         changesets = sh returnStdout: true, script: """curl -H "Authorization: token ${TOKEN}" "https://api.github.com/repos/${repo}/pulls/${pullid}/comments/${commentid}" """
         echo "${changesets}"
