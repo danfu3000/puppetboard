@@ -219,13 +219,14 @@ def getPullRequestComment(repo, pullid){
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
         def result = ["curl", "-X", "GET", "-H", "Authorization: token ${TOKEN}","https://api.github.com/repos/${repo}/pulls/${pullid}/comments"].execute().text
         echo "${result}"
-        changesets = sh returnStdout: true, script: """curl -H "Authorization: token ${TOKEN}" "https://api.github.com/repos/${repo}/pulls/${pullid}/comments" """
-        echo "${changesets}"
     }
 }
 
-def setPullRequestComment(repo, pullid, text){
+def setPullRequestComment(repo, pullid, commitid, path, line, text){
     def post_data = [
+            "commit_id"  : commitid,
+            "path"       : path,
+            "line"       : line,
             "body"       : text
         ]
     echo "${post_data}"
