@@ -246,6 +246,12 @@ def setPullRequestReviews(repo, pullid, state, text){
             "event"      : status
         ]
     echo "${post_data}"
+    // Repository
+    def repo_config = scm.getUserRemoteConfigs()[0]
+    def repo_url = repo_config.getUrl()
+    def repository = repo_url.split(":")[1].replaceAll("\\.git", ":") + "${env.GIT_BRANCH}"
+    echo "${repository}"
+
     def post_json = JsonOutput.toJson(post_data)
     withCredentials([string(credentialsId: "kmtesttoken", variable: 'TOKEN')]) {
         def result = ["curl", "-X", "POST", "-H", "Authorization: token ${TOKEN}", "-d", "${post_json}", "https://api.github.com/repos/${repo}/pulls/${pullid}/reviews"].execute().text
